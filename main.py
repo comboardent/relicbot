@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands
 from utils import *
 import sqlite3
-
+import datetime
+import time
 async def get_pre(bot, message):
     connect()
     conn = sqlite3.connect("settings.db")
@@ -16,9 +17,17 @@ async def get_pre(bot, message):
         return [(rows[0][1]), "!"]
 
 
-startup_extensions = ["cog_prefix", "cog_tags", "cog_remind", "cog_bank", "cog_games"]
+startup_extensions = ["cog_prefix", "cog_tags", "cog_remind", "cog_bank", "cog_games", "cog_profile"]
 description = '''A multifunctional discord bot written in python, using the discord.py library.'''
 bot = commands.Bot(command_prefix=get_pre, description=description)
+
+@bot.event
+async def on_command_error(error, ctx):
+    if isinstance(error, commands.CommandOnCooldown):
+        time1 = time.strftime("%H hours %M minutes and %S seconds", time.gmtime(error.retry_after))
+        await bot.send_message(ctx.message.channel, f"This command is on cooldown! Hold your horses! >:c\nTry again in {str(time1)}")
+
+
 
 @bot.event
 async def on_ready():

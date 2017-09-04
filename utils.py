@@ -3,6 +3,13 @@ import time
 import datetime
 import random
 
+def connectprofile():
+    conn = sqlite3.connect("profile.db")
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS profile (userid text, reputation int, balance text)")
+    conn.commit()
+    conn.close()
+
 def connect():
     conn = sqlite3.connect("settings.db")
     cur = conn.cursor()
@@ -66,6 +73,20 @@ def hasAccount(userid):
         return True
     else:
         return False
+
+def hasProfile(userid):
+    connect()
+    uid = userid
+    conn = sqlite3.connect("profile.db")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM profile")
+    rows = cur.fetchall()
+    conn.close()
+    if any(uid in s for s in rows):
+        return True
+    else:
+        return False
+
 
 def flip():
     randint = random.randint(0, 1)
