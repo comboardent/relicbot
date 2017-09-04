@@ -79,7 +79,7 @@ class Profile():
     async def reputation(self, ctx):
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title="Reputation sub-commands", color=ctx.message.author.color)
-            embed.add_field(name=getPrefix(ctx.message.server.id)+"reputation view", value="View your reputation!", inline=False)
+            embed.add_field(name=getPrefix(ctx.message.server.id)+"reputation points", value="View your reputation!", inline=False)
             embed.add_field(name=getPrefix(ctx.message.server.id) + "reputation add", value="Increase someones else reputation!", inline=False)
             await self.bot.say(embed=embed)
 
