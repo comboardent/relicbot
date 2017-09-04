@@ -29,7 +29,7 @@ class Prefix():
                 cur.execute("INSERT INTO prefix VALUES(?, ?)", (ctx.message.server.id, str(prefix)))
                 conn.commit()
                 conn.close()
-                await self.bot.say("Successfully changed your prefix to " + prefix )
+                await self.bot.say("Successfully changed your prefix to " + prefix + ", remember ! will always work as a prefix also.")
         else:
             await self.bot.say("You must choose a prefix to set")
 

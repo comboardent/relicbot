@@ -2,8 +2,10 @@ import discord
 from discord.ext import commands
 from utils import *
 import sqlite3
-import datetime
 import time
+
+
+
 async def get_pre(bot, message):
     connect()
     conn = sqlite3.connect("settings.db")
@@ -17,16 +19,20 @@ async def get_pre(bot, message):
         return [(rows[0][1]), "!"]
 
 
-startup_extensions = ["cog_prefix", "cog_tags", "cog_remind", "cog_bank", "cog_games", "cog_profile"]
+startup_extensions = ["cog_prefix", "cog_tags", "cog_remind", "cog_bank", "cog_games", "cog_profile", "cog_info"]
 description = '''A multifunctional discord bot written in python, using the discord.py library.'''
 bot = commands.Bot(command_prefix=get_pre, description=description)
+
+bot.remove_command("help")
+main_chan = discord.Object('354278428125429760')
 
 @bot.event
 async def on_command_error(error, ctx):
     if isinstance(error, commands.CommandOnCooldown):
         time1 = time.strftime("%H hours %M minutes and %S seconds", time.gmtime(error.retry_after))
         await bot.send_message(ctx.message.channel, f"This command is on cooldown! Hold your horses! >:c\nTry again in {str(time1)}")
-
+    else:
+        await bot.send_message(main_chan, str(error) + " in channel " + ctx.message.channel.name + " in " + ctx.message.server.name + " issued by " + ctx.message.author.name + "#" + ctx.message.author.discriminator + ".")
 
 
 @bot.event
