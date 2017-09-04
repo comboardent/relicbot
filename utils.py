@@ -3,6 +3,14 @@ import time
 import datetime
 import random
 
+def connectcustom():
+    conn = sqlite3.connect("custom.db")
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS custom (guildid text, prefix text, name text, content text, combined text)")
+    conn.commit()
+    conn.close()
+
+
 def connectprofile():
     conn = sqlite3.connect("profile.db")
     cur = conn.cursor()

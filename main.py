@@ -36,7 +36,7 @@ async def get_pre(bot, message):
         return [(rows[0][1]), "!"]
 
 
-startup_extensions = ["cog_prefix", "cog_tags", "cog_remind", "cog_bank", "cog_games", "cog_profile", "cog_info"]
+startup_extensions = ["cog_prefix", "cog_tags", "cog_remind", "cog_bank", "cog_games", "cog_profile", "cog_info", "cog_custom"]
 description = '''A multifunctional discord bot written in python, using the discord.py library.'''
 bot = commands.Bot(command_prefix=get_pre, description=description)
 
@@ -50,6 +50,7 @@ async def on_command_error(error, ctx):
         await bot.send_message(ctx.message.channel, f"This command is on cooldown! Hold your horses! >:c\nTry again in {str(time1)}")
     else:
         await bot.send_message(main_chan, str(error) + " in channel " + ctx.message.channel.name + " in " + ctx.message.server.name + " issued by " + ctx.message.author.name + "#" + ctx.message.author.discriminator + ".")
+
 
 @bot.event
 async def on_server_join(server):
@@ -73,6 +74,33 @@ async def on_ready():
     print("Server count " + str(server_count))
     await bot.change_presence(game=discord.Game(name="!help"))
     print('------')
+
+@bot.event
+async def on_message(message):
+    connectcustom()
+
+    conn = sqlite3.connect("custom.db")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM custom WHERE guildid=?", (message.server.id,))
+    rows = cur.fetchall()
+    conn.close()
+    for row in rows:
+        if message.content == row[4]:
+            msgToSend = str(row[3])
+            if '{tagAuthor}' in msgToSend:
+                toSend = msgToSend.replace('{tagAuthor}', message.author.mention)
+                if '{channel}' in msgToSend:
+                    toSend1 = toSend.replace('{channel}', message.channel.name)
+                    send = False
+                else:
+                    send = True
+
+            if send:
+                await bot.send_message(message.channel, toSend)
+            else:
+                await bot.send_message(message.channel, toSend1)
+
+    await bot.process_commands(message)
 
 if __name__ == "__main__":
     for extension in startup_extensions:
