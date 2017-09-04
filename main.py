@@ -22,7 +22,7 @@ bot = commands.Bot(command_prefix=get_pre, description=description)
 
 @bot.event
 async def on_ready():
-    server_count = 1
+    server_count = 0
     for s in bot.servers:
         server_count = server_count + 1
     print('Logged in as')
@@ -39,4 +39,7 @@ if __name__ == "__main__":
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
 
-bot.run('-')
+token = open("token.txt", "r")
+toke = token.read()
+
+bot.run(str(toke))
