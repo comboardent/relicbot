@@ -14,23 +14,26 @@ class Tags():
             embed.add_field(name=getPrefix(ctx.message.server.id)+"tag create (name) (content)", value="Create a new tag!", inline=False)
             embed.add_field(name=getPrefix(ctx.message.server.id) + "tag view (name)", value="View a tag!", inline=False)
             embed.add_field(name=getPrefix(ctx.message.server.id) + "tag delete (name)", value="Delete a tag", inline=False)
-            embed.add_field(name=getPrefix(ctx.message.server.id) + "tag edit (name) (newContent)", value="Edit a tag!", inline=False)
+            embed.add_field(name=getPrefix(ctx.message.server.id) + "tag viewall", value="View all the tags in your server!", inline=False)
             await self.bot.say(embed=embed)
 
     @tag.command(pass_context=True)
-    async def create(self, ctx, name=None, content=None):
+    async def create(self, ctx, name=None):
         if name is None:
             await self.bot.say("You must enter the name of the new tag!")
-        elif content is None:
-            await self.bot.say("You must enter the content of the new tag!")
         else:
+            args = ctx.message.content
+            split = args.split(' ')
+            lenName = len(split[2])
+            toGet = int(12 + lenName)
+            toPut = args[toGet:]
             connecttags()
             conn = sqlite3.connect("tags.db")
             cur = conn.cursor()
-            cur.execute("INSERT INTO tag VALUES(?, ?, ?)", (ctx.message.server.id, str(name), str(content)))
+            cur.execute("INSERT INTO tag VALUES(?, ?, ?)", (ctx.message.server.id, str(name), str(toPut)))
             conn.commit()
             conn.close()
-            await self.bot.say("Successfull added new tag!")
+            await self.bot.say("Successfully added new tag!")
 
     @tag.command(pass_context=True)
     async def view(self, ctx, name=None):

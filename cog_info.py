@@ -8,7 +8,6 @@ class Info():
     @commands.command(pass_context=True)
     async def help(self, ctx):
 
-
         commands = len(self.bot.commands)
         embed = discord.Embed(title="The bot prefix for this server is: " + str(getPrefix(ctx.message.server.id)),
                               color=ctx.message.author.color)

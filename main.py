@@ -3,8 +3,25 @@ from discord.ext import commands
 from utils import *
 import sqlite3
 import time
+import aiohttp
+import discord
+import asyncio
 
-
+async def my_background_task():
+    await bot.wait_until_ready()
+    counter = 0
+    channel = discord.Object(id='354278428125429760')
+    while not bot.is_closed:
+        guild_count = len(bot.servers)
+        # replace guilds with servers if you're on async and not rewrite
+        headers = {
+            'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI0MzkyMzUxNzQ4NDE3MTI3NCIsImlhdCI6MTUwNDU0MDY5MX0.SJUcrnBjrcirz9POGLRqUooIuSw9bdeTNKh4osL6lCk'}
+        data = {'server_count': guild_count}
+        api_url = 'https://discordbots.org/api/bots/354007795424690196/stats'
+        async with aiohttp.ClientSession() as session:
+            await session.post(api_url, data=data, headers=headers)
+        await bot.send_message(channel, counter)
+        await asyncio.sleep(600)
 
 async def get_pre(bot, message):
     connect()
@@ -34,6 +51,17 @@ async def on_command_error(error, ctx):
     else:
         await bot.send_message(main_chan, str(error) + " in channel " + ctx.message.channel.name + " in " + ctx.message.server.name + " issued by " + ctx.message.author.name + "#" + ctx.message.author.discriminator + ".")
 
+@bot.event
+async def on_server_join(server):
+    try:
+        invites = await bot.invites_from(server)
+        for invite in invites:
+            if not invite.revoked:
+                code = invite.code
+                break
+    except Exception:
+        code = "I couldn't grab an invite."
+    await bot.send_message(main_chan, '[`'+str(datetime.datetime.now().strftime("%d/%m/%y %H:%M:%S"))+'`] I joined the server `' + server.name + '` ('+ server.id + '), owned by `' + server.owner.name + '#' + server.owner.discriminator + '` (' + server.owner.id + '). First invite I could find: {}'.format(code))
 
 @bot.event
 async def on_ready():
@@ -56,5 +84,5 @@ if __name__ == "__main__":
 
 token = open("token.txt", "r")
 toke = token.read()
-
+bot.loop.create_task(my_background_task())
 bot.run(str(toke))
